@@ -1,0 +1,99 @@
+We construct the UNF from the following:
+
+    voxel spacing
+
+    orientation (direction cosines)
+
+    voxel values (including dimension counts)
+
+Voxel values should be real values, not scaled (in the case they are scaled for storage, e.g. by using scl_slope and scl_inter in NIfTI-1).  Units are in mm.
+
+Since UNFs are not defined for matricies, we choose to express the values as a one-dimensional vector and hash the volume dimensions separately.
+
+Because the same data can be stored in different axis orders (or with axes flipped), we must normalize how the data is ordered.
+
+Voxel spacing is combined with direction cosines so we deal with the affine transformation:
+
+    [ R ]   [  |   |   |  | ]   [ i ]
+    [ A ] = [ d_i d_j d_k o ] * [ j ]
+    [ S ]   [  |   |   |  | ]   [ k ]
+    [ 1 ]   [  0   0   0  1 ]   [ 1 ]
+
+where d_i, d_j, and d_k are (scaled with voxel size) directions for zero-based i, j, and k, respectively, and o is the offset vector (or origin).  The d_* and o are vectors of length 3; we do not include the fourth value in the treatment below.
+
+First, we decide whether to flip the axes.  For each of the d_*, calculate the UNF for d_x and for -d_x.  The UNF that comes first in a POSIX locale sort corresponds to the the axis direction.
+
+The three UNFs chosen for the three d_* are then sorted according to the POSIX locale.  The ordered UNFs are associated with the axes that then become the new i, j, and k.
+
+Note that these transformations may require o to be recalculated.
+
+As an example, take:
+
+    [ R ]   [ 1 0 0 0 ]   [ i ]
+    [ A ] = [ 0 1 0 0 ] * [ j ]
+    [ S ]   [ 0 0 1 0 ]   [ k ]
+    [ 1 ]   [ 0 0 0 1 ]   [ 1 ]
+
+so d_i = (1, 0, 0), d_j = (0, 1, 0), and d_k = (0, 0, 1).  We calculate (UNF Version 6, with default parameters):
+
+    UNF(d_i) = 'URJNfhUTYGE1Eg/J6r1jDg=='
+    UNF(-d_i) = 'Z/mzscZlZ1eSqBJByNcuDw=='
+
+    UNF(d_j) = 'wy3A2VEtZmSX5p6MDG701A=='
+    UNF(-d_j) = 'i25mW0C1kjzM3zud7QHcmA=='
+
+    UNF(d_k) = 'ELOYoLm/dWgn1Qj6r+fzEA=='
+    UNF(-d_k) = 'VjHIX0YYZ21blOrB3cRayA=='
+
+Note that the zeros do not become negative zeros in the negative sample vectors.
+
+Our choices are d_i, -d_j, and d_k, so we reorder the data such that:
+
+    [ R ]   [ 1  0 0   0 ]   [ i ]
+    [ A ] = [ 0 -1 0 255 ] * [ j ]
+    [ S ]   [ 0  0 1   0 ]   [ k ]
+    [ 1 ]   [ 0  0 0   1 ]   [ 1 ]
+
+With 256 values in each dimension, we have also updated o because that the value at RAS = (0, 0, 0), previously at ijk = (0, 0, 0), is now at ijk = (0, 255, 0).
+
+We now swap dimensions based on the three UNFs:
+
+    First: UNF(d_k) = 'ELOYoLm/dWgn1Qj6r+fzEA=='
+    Second: UNF(d_i) = 'URJNfhUTYGE1Eg/J6r1jDg=='
+    Third: UNF(-d_j) = 'i25mW0C1kjzM3zud7QHcmA=='
+
+and we get:
+
+    [ R ]   [ 0 1  0   0 ]   [ i ]
+    [ A ] = [ 0 0 -1 255 ] * [ j ]
+    [ S ]   [ 1 0  0   0 ]   [ k ]
+    [ 1 ]   [ 0 0  0   1 ]   [ 1 ]
+
+where I define d_*' and o' such that in this case d_i' = (1, 0, 0), d_j' = (0, 0, 1), d_k' = (0, -1, 0), and o' = (0, 255, 0).
+
+Now the relevant pieces of information are:
+
+    (N_i', N_j', N_k') -- a vector
+
+    d_i' -- a vector
+
+    d_j' -- a vector
+
+    d_k' -- a vector
+
+    o' -- a vector
+
+    the vector of voxel values, arranged as a 1-D vector, with i' the fastest-varying direction, and k the slowest varying direction -- a vector
+
+We create a vector of UNFs of these elements:
+
+    V = (UNF((N_i', N_j', N_k')), 
+         UNF(d_i'), 
+         UNF(d_j'), 
+         UNF(d_k'
+         UNF(o'), 
+         UNF(values))
+
+The UNF of the volume is the UNF of this vector of chracter strings:
+
+    UNF(V)
