@@ -27,18 +27,6 @@ if not os.path.exists('data/test_1.nii.gz'):
     nibabel.save(vol, 'data/test_1.nii.gz')
 
 if not os.path.exists('data/test_2.nii.gz'):
-    data = numpy.array(range(2*3*4), dtype='short')
-    data.shape = (4, 3, 2)
-    data = numpy.moveaxis(data, [0, 1, 2], [2, 1, 0])
-    transform = [ [ 1, 0, 0, 0 ], 
-                  [ 0, 2, 0, 0 ], 
-                  [ 0, 0, 3, 0 ], 
-                  [ 0, 0, 0, 1 ] ]
-    transform = numpy.array(transform, dtype=numpy.dtype('float32'))
-    vol = nibabel.Nifti1Image(data, transform)
-    nibabel.save(vol, 'data/test_2.nii.gz')
-
-if not os.path.exists('data/test_3.nii.gz'):
     data = numpy.array([ 17**i % 31 for i in range(4*3*2) ], dtype='short')
     data.shape = (2, 3, 4)
     data = numpy.moveaxis(data, [0, 1, 2], [2, 1, 0])
@@ -48,7 +36,7 @@ if not os.path.exists('data/test_3.nii.gz'):
                   [ 0,  0,  0,  1 ] ]
     transform = numpy.array(transform, dtype=numpy.dtype('float32'))
     vol = nibabel.Nifti1Image(data, transform)
-    nibabel.save(vol, 'data/test_3.nii.gz')
+    nibabel.save(vol, 'data/test_2.nii.gz')
 
 sys.exit(0)
 
