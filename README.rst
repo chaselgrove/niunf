@@ -142,6 +142,6 @@ The final UNF is calculated by creating a vector from the UNF for A and the UNF 
 
  UNF(image) = UNF(("UNF:6:59HfZp8Y4JL2iV1VYIUToQ==", "UNF:6:0bcm3Fem0lGYlWI5ctnahg==") = UNF:6:GtdcjAw+tnOeyQlafNHnjA==
 
-Note that the UNF of A and M follow the python-unf scheme for matrices, not the R scheme, which treats matrices as data frames and reorders components of the matrix before calculating the final UNF.
+Note that the UNF of A and M follow the python-unf 0.5.0 scheme for matrices, not the R scheme, which treats matrices as data frames and reorders components of the matrix before calculating the final UNF.  Note also that this scheme was changed in python-unf.
 
 We also do not distinguish between positive and negative zeros in this calculation, treating them as semantically equal.  All negative zeros are converted to positive zeros before being used in a UNF calculation.
