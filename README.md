@@ -101,7 +101,7 @@ location of the first voxel (where (i, j, k) = (0, 0, 0)).  The m values
 describe the motion in space as each voxel index increases, so one step
 along i corresponds to motion of (m_ir, m_ia, m_is) in space.
 
-See <http://nipy.org/nibabel/coordinate_systems.html> for a more
+See <https://nipy.org/nibabel/coordinate_systems.html> for a more
 complete treatment of coordinate systems.
 
 ## UNF scheme
@@ -213,4 +213,4 @@ converted to positive zeros before being used in a UNF calculation.
 
 ## References
 
-[Dataverse UNF documentation](http://guides.dataverse.org/en/latest/developers/unf/index.html)
+[Dataverse UNF documentation](https://guides.dataverse.org/en/latest/developers/unf/index.html)
