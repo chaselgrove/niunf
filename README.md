@@ -33,3 +33,5 @@ Exploratory schemes are:
 
 - [Scheme 1](SCHEME_1.md): Reorders data based on properties of the
 data index to real world mapping, then applies UNFs.
+- [Scheme 2](SCHEME_2.md): Treats data as a collection of
+(x, y, z, value) vectors.
